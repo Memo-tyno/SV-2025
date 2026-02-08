@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Sondage Saint-Valentin 💕</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --rose-doux: #FFB6C1;
+            --rose-vif: #FF69B4;
+            --rouge-amour: #FF1493;
+            --blanc-creme: #FFF5F7;
+            --or-rose: #F4C2C2;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #FFE5EC 0%, #FFC2D4 50%, #FFB3C6 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animations de coeurs flottants */
+        @keyframes float-heart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes float-flower {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(180deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            animation: float-heart linear infinite;
+        }
+
+        .flower {
+            position: absolute;
+            font-size: 28px;
+            animation: float-flower linear infinite;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(255, 20, 147, 0.3);
+            position: relative;
+            z-index: 10;
+            border: 3px solid var(--rose-vif);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--rouge-amour);
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--rose-vif);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, var(--blanc-creme) 0%, #FFF 100%);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--or-rose);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button, .btn {
+            font-family: 'Quicksand', sans-serif;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, var(--rouge-amour) 0%, var(--rose-vif) 100%);
+            color: white;
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFD1DC 100%);
+            color: #666;
+        }
+
+        .btn-no:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.4);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--rose-doux);
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-family: 'Quicksand', sans-serif;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--rouge-amour);
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--rose-doux), var(--rouge-amour));
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--rouge-amour);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 20, 147, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--rouge-amour);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 20, 147, 0.5);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 2em;
+            color: var(--rouge-amour);
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .final-message {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .final-message h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--rouge-amour);
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .final-message p {
+            font-size: 1.2em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            button, .btn {
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Coeurs et fleurs flottants -->
+    <div class="floating-hearts" id="floatingElements"></div>
+
+    <div class="container">
+        <h1>💕 Saint-Valentin 2025 💕</h1>
+        <p class="subtitle">Un petit sondage pour toi mon amour... 🌹</p>
+
+        <!-- Question 1 -->
+        <div id="q1" class="question-card">
+            <p class="question-text">Veux-tu être ma Valentine pour toujours ? 💕</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ1('yes')">Oui</button>
+                <button class="btn btn-no" onclick="answerQ1('no')">Non</button>
+            </div>
+        </div>
+
+        <!-- Question 1 bis (si non) -->
+        <div id="q1bis" class="question-card hidden">
+            <p class="question-text">Tu t'es trompée de réponse, tu veux revoir la question ?</p>
+            <div class="btn-container">
+                <button id="q1bis-yes" class="btn btn-yes" onclick="backToQ1()">Oui</button>
+                <button id="q1bis-no" class="btn btn-no" onclick="swapQ1bis()">Non</button>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div id="q2" class="question-card hidden">
+            <p class="question-text">Aimerais-tu qu'on parte en week-end romantique bientôt ? ✈️</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ2('yes')">Oui</button>
+                <button class="btn btn-no" onclick="answerQ2('no')">Non</button>
+            </div>
+        </div>
+
+        <!-- Question 2a (si oui) -->
+        <div id="q2a" class="question-card hidden">
+            <p class="question-text">Où tu veux partir ?</p>
+            <input type="text" id="destination" placeholder="Ta destination de rêve...">
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="submitDestination()">Valider</button>
+            </div>
+        </div>
+
+        <!-- Question 2b (si non) -->
+        <div id="q2b" class="question-card hidden">
+            <p class="question-text">Tu préfères un week-end chez toi ou chez moi ?</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ2b('chez toi')">Chez toi</button>
+                <button class="btn btn-no" onclick="answerQ2b('chez moi')">Chez moi</button>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div id="q3" class="question-card hidden">
+            <p class="question-text">Tu voudras faire combien d'enfants plus tard ?</p>
+            <div class="slider-container">
+                <input type="range" id="kidsSlider" min="0" max="10" value="5">
+                <div class="slider-value" id="kidsValue">5</div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="submitKids()">Valider</button>
+            </div>
+        </div>
+
+        <!-- Question 3a (si 0) -->
+        <div id="q3a" class="question-card hidden">
+            <p class="question-text">Moi je veux des enfants, on en fait un maintenant ?</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ3a('Okay')">Okay</button>
+                <button class="btn btn-no" onclick="answerQ3a('Mmh viande mais okay')">Mmh viande mais okay</button>
+            </div>
+        </div>
+
+        <!-- Question 3b (si 1-5) -->
+        <div id="q3b" class="question-card hidden">
+            <p class="question-text">Tu voudras qu'on fasse bébé le jour de la Saint-Valentin ou le 13/06 ?</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ3b('Saint-Valentin')">Saint-Valentin</button>
+                <button class="btn btn-no" onclick="answerQ3b('13/06')">13/06</button>
+            </div>
+        </div>
+
+        <!-- Question 3c (si 5-10) -->
+        <div id="q3c" class="question-card hidden">
+            <p class="question-text">Tu seras contente si je te fais ton équipe de foot ?</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ3c('Oui')">Oui</button>
+                <button class="btn btn-no" onclick="answerQ3c('Non')">Non</button>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div id="q4" class="question-card hidden">
+            <p class="question-text">Ton envie d'avoir des enfants avec moi sur 10 ?</p>
+            <div class="slider-container">
+                <input type="range" id="desireSlider" min="0" max="10" value="5">
+                <div class="slider-value" id="desireValue">5</div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="submitDesire()">Valider</button>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div id="q5" class="question-card hidden">
+            <p class="question-text">À ton avis, mon envie de te faire un gosse maintenant ?</p>
+            <div class="slider-container">
+                <input type="range" id="guessSlider" min="0" max="10" value="5">
+                <div class="slider-value" id="guessValue">5</div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="submitGuess()">Valider</button>
+            </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div id="q6" class="question-card hidden">
+            <p class="question-text">On s'entraîne à en faire ?</p>
+            <div class="btn-container">
+                <button class="btn btn-yes" onclick="answerQ6('Oui')">Oui</button>
+                <button class="btn btn-no" onclick="answerQ6('Non')">Non</button>
+            </div>
+        </div>
+
+        <!-- Question 7 -->
+        <div id="q7" class="question-card hidden">
+            <p class="question-text">T'es ma pute et je peux t'utiliser comme je veux ?</p>
+            <div class="btn-container">
+                <button id="q7-yes" class="btn btn-yes" onclick="answerQ7('yes')">Oui</button>
+                <button id="q7-no" class="btn btn-no" onclick="answerQ7('no')">Non</button>
+            </div>
+        </div>
+
+        <!-- Message final -->
+        <div id="final" class="question-card hidden">
+            <div class="final-message">
+                <h2>Merci mon amour ! 💕</h2>
+                <p>Je t'aime vraiment très fort, je peux en devenir fou 💗</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration EmailJS
+        // IMPORTANT: Remplace ces valeurs par tes propres clés EmailJS
+        const EMAIL_CONFIG = {
+            serviceId: 'TON_SERVICE_ID',  // À remplacer
+            templateId: 'TON_TEMPLATE_ID', // À remplacer
+            publicKey: 'TA_PUBLIC_KEY'     // À remplacer
+        };
+
+        // Initialiser EmailJS
+        emailjs.init(EMAIL_CONFIG.publicKey);
+
+        // Stockage des réponses
+        const responses = {
+            q1: '',
+            q2: '',
+            q2_detail: '',
+            q3_kids: '',
+            q3_detail: '',
+            q4: '',
+            q5: '',
+            q6: '',
+            q7: ''
+        };
+
+        // Générer coeurs et fleurs flottants
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            const hearts = ['💕', '💖', '💗', '💝', '💓', '💞'];
+            const flowers = ['🌹', '🌺', '🌸', '🌷', '🌼'];
+            
+            for (let i = 0; i < 15; i++) {
+                const element = document.createElement('div');
+                const isHeart = Math.random() > 0.4;
+                element.className = isHeart ? 'heart' : 'flower';
+                element.textContent = isHeart ? hearts[Math.floor(Math.random() * hearts.length)] : flowers[Math.floor(Math.random() * flowers.length)];
+                element.style.left = Math.random() * 100 + '%';
+                element.style.animationDuration = (10 + Math.random() * 10) + 's';
+                element.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(element);
+            }
+        }
+
+        createFloatingElements();
+
+        // Slider updates
+        document.getElementById('kidsSlider').oninput = function() {
+            document.getElementById('kidsValue').textContent = this.value;
+        };
+
+        document.getElementById('desireSlider').oninput = function() {
+            document.getElementById('desireValue').textContent = this.value;
+        };
+
+        document.getElementById('guessSlider').oninput = function() {
+            document.getElementById('guessValue').textContent = this.value;
+        };
+
+        // Question 1
+        function answerQ1(answer) {
+            if (answer === 'yes') {
+                responses.q1 = 'Oui';
+                hide('q1');
+                show('q2');
+            } else {
+                responses.q1 = 'Non (puis corrigé)';
+                hide('q1');
+                show('q1bis');
+            }
+        }
+
+        let q1bisSwapped = false;
+        function swapQ1bis() {
+            const yesBtn = document.getElementById('q1bis-yes');
+            const noBtn = document.getElementById('q1bis-no');
+            
+            if (!q1bisSwapped) {
+                yesBtn.textContent = 'Non';
+                noBtn.textContent = 'Oui';
+                yesBtn.onclick = () => swapQ1bis();
+                noBtn.onclick = () => backToQ1();
+                q1bisSwapped = true;
+            } else {
+                yesBtn.textContent = 'Oui';
+                noBtn.textContent = 'Non';
+                yesBtn.onclick = () => backToQ1();
+                noBtn.onclick = () => swapQ1bis();
+                q1bisSwapped = false;
+            }
+        }
+
+        function backToQ1() {
+            hide('q1bis');
+            show('q1');
+        }
+
+        // Question 2
+        function answerQ2(answer) {
+            responses.q2 = answer === 'yes' ? 'Oui' : 'Non';
+            hide('q2');
+            if (answer === 'yes') {
+                show('q2a');
+            } else {
+                show('q2b');
+            }
+        }
+
+        function submitDestination() {
+            const dest = document.getElementById('destination').value;
+            responses.q2_detail = dest || 'Non spécifié';
+            hide('q2a');
+            show('q3');
+        }
+
+        function answerQ2b(choice) {
+            responses.q2_detail = choice;
+            hide('q2b');
+            show('q3');
+        }
+
+        // Question 3
+        function submitKids() {
+            const kidsCount = parseInt(document.getElementById('kidsSlider').value);
+            responses.q3_kids = kidsCount;
+            hide('q3');
+            
+            if (kidsCount === 0) {
+                show('q3a');
+            } else if (kidsCount >= 1 && kidsCount <= 5) {
+                show('q3b');
+            } else {
+                show('q3c');
+            }
+        }
+
+        function answerQ3a(answer) {
+            responses.q3_detail = answer;
+            hide('q3a');
+            show('q4');
+        }
+
+        function answerQ3b(answer) {
+            responses.q3_detail = answer;
+            hide('q3b');
+            show('q4');
+        }
+
+        function answerQ3c(answer) {
+            responses.q3_detail = answer;
+            hide('q3c');
+            show('q4');
+        }
+
+        // Question 4
+        function submitDesire() {
+            responses.q4 = document.getElementById('desireSlider').value;
+            hide('q4');
+            show('q5');
+        }
+
+        // Question 5
+        function submitGuess() {
+            responses.q5 = document.getElementById('guessSlider').value;
+            hide('q5');
+            show('q6');
+        }
+
+        // Question 6
+        function answerQ6(answer) {
+            responses.q6 = answer;
+            hide('q6');
+            show('q7');
+        }
+
+        // Question 7
+        let q7Swapped = false;
+        function answerQ7(answer) {
+            const yesBtn = document.getElementById('q7-yes');
+            const noBtn = document.getElementById('q7-no');
+            
+            if (answer === 'yes') {
+                responses.q7 = 'Oui';
+                hide('q7');
+                sendEmail();
+                show('final');
+            } else {
+                // Inverser les boutons
+                if (!q7Swapped) {
+                    yesBtn.textContent = 'Non';
+                    noBtn.textContent = 'Oui';
+                    yesBtn.onclick = () => answerQ7('no');
+                    noBtn.onclick = () => answerQ7('yes');
+                    q7Swapped = true;
+                } else {
+                    yesBtn.textContent = 'Oui';
+                    noBtn.textContent = 'Non';
+                    yesBtn.onclick = () => answerQ7('yes');
+                    noBtn.onclick = () => answerQ7('no');
+                    q7Swapped = false;
+                }
+            }
+        }
+
+        // Helpers
+        function hide(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function show(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // Envoi email avec EmailJS
+        function sendEmail() {
+            const emailParams = {
+                to_email: 'TON_EMAIL@example.com', // Remplace par ton email
+                subject: 'Réponses Sondage Saint-Valentin 💕',
+                message: formatResponses()
+            };
+
+            emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, emailParams)
+                .then(function(response) {
+                    console.log('Email envoyé avec succès!', response.status, response.text);
+                }, function(error) {
+                    console.error('Erreur lors de l\'envoi:', error);
+                    alert('Erreur lors de l\'envoi de l\'email. Vérifie la console.');
+                });
+        }
+
+        function formatResponses() {
+            return `
+🌹 RÉPONSES DU SONDAGE SAINT-VALENTIN 🌹
+
+1. Veux-tu être ma Valentine pour toujours ? ${responses.q1}
+
+2. Week-end romantique ? ${responses.q2}
+   → ${responses.q2_detail}
+
+3. Nombre d'enfants souhaités : ${responses.q3_kids}
+   → ${responses.q3_detail}
+
+4. Son envie d'avoir des enfants avec moi : ${responses.q4}/10
+
+5. Son estimation de mon envie : ${responses.q5}/10
+
+6. S'entraîner à en faire ? ${responses.q6}
+
+7. Dernière question : ${responses.q7}
+
+💕 Envoyé avec amour le ${new Date().toLocaleDateString('fr-FR')} 💕
+            `;
+        }
+    </script>
+</body>
+</html>
