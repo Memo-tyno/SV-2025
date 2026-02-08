@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Sondage Saint-Valentin 💕</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -413,23 +412,13 @@
         <div id="final" class="question-card hidden">
             <div class="final-message">
                 <h2>Merci mon amour ! 💕</h2>
-                <p>Je t'aime vraiment très fort, je peux en devenir fou 💗</p>
+                <p style="margin-bottom: 20px;">Je t'aime vraiment très fort, je peux en devenir fou 💗</p>
+                <div id="responses-summary" style="text-align: left; background: var(--blanc-creme); padding: 20px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--rose-vif);"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuration EmailJS
-        // IMPORTANT: Remplace ces valeurs par tes propres clés EmailJS
-        const EMAIL_CONFIG = {
-            serviceId: 'service_cp78zi9',  // À remplacer
-            templateId: 'template_px01aks', // À remplacer
-            publicKey: '-vKRYs7ZpQJ2DQnyu'     // À remplacer
-        };
-
-        // Initialiser EmailJS
-        emailjs.init(EMAIL_CONFIG.publicKey);
-
         // Stockage des réponses
         const responses = {
             q1: '',
@@ -601,7 +590,7 @@
             if (answer === 'yes') {
                 responses.q7 = 'Oui';
                 hide('q7');
-                sendEmail();
+                displayResponses();
                 show('final');
             } else {
                 // Inverser les boutons
@@ -630,44 +619,21 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // Envoi email avec EmailJS
-        function sendEmail() {
-            const emailParams = {
-                to_email: 'tyno131@yahoo.com', // Remplace par ton email
-                subject: 'Réponses Sondage Saint-Valentin 💕',
-                message: formatResponses()
-            };
-
-            emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, emailParams)
-                .then(function(response) {
-                    console.log('Email envoyé avec succès!', response.status, response.text);
-                }, function(error) {
-                    console.error('Erreur lors de l\'envoi:', error);
-                    alert('Erreur lors de l\'envoi de l\'email. Vérifie la console.');
-                });
-        }
-
-        function formatResponses() {
-            return `
-🌹 RÉPONSES DU SONDAGE SAINT-VALENTIN 🌹
-
-1. Veux-tu être ma Valentine pour toujours ? ${responses.q1}
-
-2. Week-end romantique ? ${responses.q2}
-   → ${responses.q2_detail}
-
-3. Nombre d'enfants souhaités : ${responses.q3_kids}
-   → ${responses.q3_detail}
-
-4. Son envie d'avoir des enfants avec moi : ${responses.q4}/10
-
-5. Son estimation de mon envie : ${responses.q5}/10
-
-6. S'entraîner à en faire ? ${responses.q6}
-
-7. Dernière question : ${responses.q7}
-
-💕 Envoyé avec amour le ${new Date().toLocaleDateString('fr-FR')} 💕
+        // Afficher les réponses à l'écran
+        function displayResponses() {
+            const summary = document.getElementById('responses-summary');
+            summary.innerHTML = `
+                <h3 style="color: var(--rouge-amour); margin-bottom: 15px; font-family: 'Playfair Display', serif;">🌹 Ses réponses 🌹</h3>
+                <p style="margin: 10px 0;"><strong>1. Ma Valentine pour toujours :</strong> ${responses.q1}</p>
+                <p style="margin: 10px 0;"><strong>2. Week-end romantique :</strong> ${responses.q2}</p>
+                <p style="margin: 10px 0; padding-left: 20px;"> ${responses.q2_detail}</p>
+                <p style="margin: 10px 0;"><strong>3. Nombre d'enfants :</strong> ${responses.q3_kids}</p>
+                <p style="margin: 10px 0; padding-left: 20px;"> ${responses.q3_detail}</p>
+                <p style="margin: 10px 0;"><strong>4. Envie d'avoir des enfants avec moi :</strong> ${responses.q4}/10</p>
+                <p style="margin: 10px 0;"><strong>5. Son estimation de mon envie :</strong> ${responses.q5}/10</p>
+                <p style="margin: 10px 0;"><strong>6. S'entraîner à en faire :</strong> ${responses.q6}</p>
+                <p style="margin: 10px 0;"><strong>7. Dernière question :</strong> ${responses.q7}</p>
+                <p style="margin-top: 20px; text-align: center; color: var(--rose-vif); font-size: 0.9em;">💕 Complété le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')} 💕</p>
             `;
         }
     </script>
